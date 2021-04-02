@@ -24,9 +24,8 @@ class CustomClock(
     // Size
     private var width = 0.0f
     private var height = 0.0f
+    private var spaceClock = 0.0f
 
-    // Radius
-    private var radius = 0.0f
 
     // ------------------------------------------------------------| Overrides |
     // ------------------------------| onSizeChanged |
@@ -47,10 +46,24 @@ class CustomClock(
     private fun drawClock(canvas: Canvas) {
         val cx = width / 2
         val cy = height / 2
-        radius = cx * 0.9f
+        val radius = cx * 0.9f
+
+        spaceClock = cx - radius
 
         canvas.drawCircle(cx, cy, radius, paint)
+
+        drawCenter(canvas, cx, cy, radius)
         drawIndicator(canvas, cx, cy, radius)
+        drawHourHand(canvas, cx, cy, radius)
+        drawMinuteHand(canvas, cx, cy, radius)
+    }
+
+    // ------------------------------| drawCenter |
+    private fun drawCenter(canvas: Canvas, cxClock: Float, cyClock: Float, radiusClock: Float) {
+        paint.style = Paint.Style.FILL
+
+        val radius = radiusClock * 0.1f
+        canvas.drawCircle(cxClock, cyClock, radius, paint)
     }
 
     // ------------------------------| drawIndicator |
@@ -59,7 +72,7 @@ class CustomClock(
 
         val cx = cxClock
         val cy = cyClock - radiusClock
-        radius = cy / 2
+        val radius = cy / 2
 
         repeat(HOURS) {
             canvas.apply {
@@ -69,8 +82,25 @@ class CustomClock(
         }
     }
 
-    // ------------------------------| drawMinuteHand |
     // ------------------------------| drawHourHand |
+    private fun drawHourHand(canvas: Canvas, cxClock: Float, cyClock: Float, radiusClock: Float) {
+        paint.strokeWidth = 10.0f
+
+        val stopX = cxClock
+        val stopY = radiusClock / 2 + spaceClock
+
+        canvas.drawLine(cxClock, cyClock, stopX, stopY, paint)
+    }
+
+    // ------------------------------| drawMinuteHand |
+    private fun drawMinuteHand(canvas: Canvas, cxClock: Float, cyClock: Float, radiusClock: Float) {
+        paint.strokeWidth = 5.0f
+
+        val stopX = cxClock
+        val stopY = radiusClock * 0.1f + spaceClock
+
+        canvas.drawLine(cxClock, cyClock, stopX, stopY, paint)
+    }
 }
 
 
