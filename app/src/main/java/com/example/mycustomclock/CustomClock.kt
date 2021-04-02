@@ -1,12 +1,15 @@
 package com.example.mycustomclock
 
+import android.animation.PropertyValuesHolder
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.graphics.transform
 
-private const val HOURS = 12
+private const val INDICATORS = 12
+private const val ANGLES_VALUE = "angles"
 
 class CustomClock(
     context: Context,
@@ -16,7 +19,6 @@ class CustomClock(
     // Paint
     private val paint = Paint().apply {
         isAntiAlias = true
-        style = Paint.Style.STROKE
         color = Color.BLACK
         strokeWidth = 3.0f
     }
@@ -25,6 +27,21 @@ class CustomClock(
     private var width = 0.0f
     private var height = 0.0f
     private var spaceClock = 0.0f
+
+    var angleSeconds = 0.0f
+
+    init {
+        val angleValues = PropertyValuesHolder.ofFloat(ANGLES_VALUE, 0.0f, 360.0f)
+
+        ValueAnimator().apply {
+            addUpdateListener {
+                angleSeconds = it.getAnimatedValue(ANGLES_VALUE) as Float
+                invalidate()
+            }
+            setValues(angleValues)
+            duration = 60000
+        }.start()
+    }
 
 
     // ------------------------------------------------------------| Overrides |
@@ -44,6 +61,8 @@ class CustomClock(
     // ------------------------------------------------------------| Draw functions |
     // ------------------------------| drawClock |
     private fun drawClock(canvas: Canvas) {
+        paint.style = Paint.Style.STROKE
+
         val cx = width / 2
         val cy = height / 2
         val radius = cx * 0.9f
@@ -56,6 +75,7 @@ class CustomClock(
         drawIndicator(canvas, cx, cy, radius)
         drawHourHand(canvas, cx, cy, radius)
         drawMinuteHand(canvas, cx, cy, radius)
+        drawSecondHand(canvas, cx, cy, radius)
     }
 
     // ------------------------------| drawCenter |
@@ -74,12 +94,34 @@ class CustomClock(
         val cy = cyClock - radiusClock
         val radius = cy / 2
 
-        repeat(HOURS) {
+        repeat(INDICATORS) {
             canvas.apply {
                 rotate(30.0f, cxClock, cyClock)
                 drawCircle(cx, cy, radius, paint)
             }
         }
+    }
+
+    // ------------------------------| drawSecondHand |
+    private fun drawSecondHand(canvas: Canvas, cxClock: Float, cyClock: Float, radiusClock: Float) {
+        paint.strokeWidth = 5.0f
+
+        val stopX = cxClock
+        val stopY = radiusClock * 0.1f + spaceClock
+
+        canvas.rotate(angleSeconds, cxClock, cyClock)
+        canvas.drawLine(cxClock, cyClock, stopX, stopY, paint)
+    }
+
+    // ------------------------------| drawMinuteHand |
+    private fun drawMinuteHand(canvas: Canvas, cxClock: Float, cyClock: Float, radiusClock: Float) {
+        paint.strokeWidth = 7.5f
+
+        val stopX = cxClock
+        val stopY = radiusClock * 0.3f + spaceClock
+
+        canvas.drawLine(cxClock, cyClock, stopX, stopY, paint)
+
     }
 
     // ------------------------------| drawHourHand |
@@ -88,16 +130,6 @@ class CustomClock(
 
         val stopX = cxClock
         val stopY = radiusClock / 2 + spaceClock
-
-        canvas.drawLine(cxClock, cyClock, stopX, stopY, paint)
-    }
-
-    // ------------------------------| drawMinuteHand |
-    private fun drawMinuteHand(canvas: Canvas, cxClock: Float, cyClock: Float, radiusClock: Float) {
-        paint.strokeWidth = 5.0f
-
-        val stopX = cxClock
-        val stopY = radiusClock * 0.1f + spaceClock
 
         canvas.drawLine(cxClock, cyClock, stopX, stopY, paint)
     }
