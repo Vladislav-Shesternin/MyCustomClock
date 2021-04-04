@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomClock">
+        <attr name="colorClock" format="color" />
+        <attr name="colorIndicators" format="color" />
+        <attr name="colorSecondHand" format="color" />
+        <attr name="colorMinuteHand" format="color" />
+        <attr name="colorHourHand" format="color" />
+        <attr name="hour" format="integer" />
+        <attr name="minute" format="integer" />
+        <attr name="second" format="integer" />
+    </declare-styleable>
+</resources>
